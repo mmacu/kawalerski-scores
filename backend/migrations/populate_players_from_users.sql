@@ -1,0 +1,1 @@
+INSERT INTO players (user_id, name) SELECT id, username FROM users ON CONFLICT (user_id) DO NOTHING;
