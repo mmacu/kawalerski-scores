@@ -217,6 +217,11 @@ export function ApiProvider({ children }) {
     return response.data;
   };
 
+  const getLatestPendingMatch = async () => {
+    const response = await axios.get('/api/matches/latest-pending');
+    return response.data;
+  };
+
   const value = {
     // Players
     getPlayers,
@@ -269,7 +274,8 @@ export function ApiProvider({ children }) {
     removeJokerDeclaration,
 
     // Participation
-    getUserParticipation
+    getUserParticipation,
+    getLatestPendingMatch
   };
 
   return (

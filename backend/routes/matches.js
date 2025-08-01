@@ -53,6 +53,17 @@ router.get('/participation', authenticateToken, async (req, res) => {
   }
 });
 
+// Get latest pending match for the current user
+router.get('/latest-pending', authenticateToken, async (req, res) => {
+  try {
+    const match = await Match.getLatestPendingMatchForUser(req.user.userId);
+    res.json(match);
+  } catch (error) {
+    console.error('Get latest pending match error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Get match by ID with participants
 router.get('/:id', authenticateToken, async (req, res) => {
   try {

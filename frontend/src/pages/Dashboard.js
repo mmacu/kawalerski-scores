@@ -7,16 +7,20 @@ import {
   CardContent,
   Box,
   CircularProgress,
-  Alert
+  Alert,
+  Button,
+  Chip
 } from '@mui/material';
 import {
   People as PlayersIcon,
   SportsSoccer as MatchesIcon,
   EmojiEvents as TrophyIcon,
-  SportsEsports as GamesIcon
+  SportsEsports as GamesIcon,
+  Casino as JokerIcon
 } from '@mui/icons-material';
 import { useApi } from '../contexts/ApiContext';
 import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 function StatCard({ title, value, icon, color = 'primary' }) {
   return (
@@ -48,10 +52,19 @@ function Dashboard() {
     totalGames: 0
   });
   const [leaderboard, setLeaderboard] = useState([]);
+  const [latestMatch, setLatestMatch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  const { getAvailableUsers, getMatches, getGames, getLeaderboard } = useApi();
+  const { 
+    getAvailableUsers, 
+    getMatches, 
+    getGames, 
+    getLeaderboard, 
+    getLatestPendingMatch, 
+    declareJoker, 
+    removeJokerDeclaration 
+  } = useApi();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -62,11 +75,12 @@ function Dashboard() {
     try {
       setLoading(true);
       
-      const [users, matches, games, leaderboardData] = await Promise.all([
+      const [users, matches, games, leaderboardData, pendingMatch] = await Promise.all([
         getAvailableUsers(),
         getMatches(),
         getGames(),
-        getLeaderboard()
+        getLeaderboard(),
+        getLatestPendingMatch()
       ]);
 
       setStats({
@@ -77,12 +91,33 @@ function Dashboard() {
       });
       
       setLeaderboard(leaderboardData.slice(0, 5)); // Top 5 for dashboard
+      if (pendingMatch) {
+        setLatestMatch(pendingMatch);
+      }
       
     } catch (err) {
       console.error('Error loading dashboard data:', err);
       setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleJokerToggle = async () => {
+    if (!latestMatch) return;
+
+    try {
+      if (latestMatch.joker_declared) {
+        await removeJokerDeclaration(latestMatch.id);
+      } else {
+        await declareJoker(latestMatch.id);
+      }
+      // Refresh the pending match data
+      const pendingMatch = await getLatestPendingMatch();
+      setLatestMatch(pendingMatch);
+    } catch (err) {
+      console.error('Error toggling joker:', err);
+      setError(err.response?.data?.error || 'Failed to update joker status');
     }
   };
 
@@ -110,6 +145,49 @@ function Dashboard() {
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
+      )}
+
+      {latestMatch && (
+        <Card sx={{ mb: 4, p: 2, bgcolor: 'warning.50', border: '2px solid', borderColor: 'warning.main', borderRadius: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+            <Typography variant="h6" sx={{ color: 'warning.dark', fontWeight: 'bold' }}>
+              🃏 Your Current Match: {latestMatch.game_name} ({latestMatch.status})
+            </Typography>
+            {!latestMatch.joker_declared ? (
+              <Button
+                variant="contained"
+                color="warning"
+                size="large"
+                onClick={handleJokerToggle}
+                disabled={latestMatch.status !== 'pending'}
+                sx={{ fontWeight: 'bold', fontSize: '1.1em' }}
+              >
+                {latestMatch.status === 'in_progress' ? 'Match in Progress' : 'USE JOKER'}
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                color="warning"
+                size="small"
+                onClick={handleJokerToggle}
+                disabled={latestMatch.status !== 'pending'}
+              >
+                {latestMatch.status === 'in_progress' ? 'Match in Progress' : 'Remove Joker'}
+              </Button>
+            )}
+          </Box>
+          <Typography variant="body2" color="text.secondary">
+            {latestMatch.status === 'in_progress'
+              ? "This match is already in progress, so the joker status cannot be changed."
+              : latestMatch.joker_declared 
+                ? "✅ Joker declared! You'll get double tickets if you win this match."
+                : "Double your tickets if you win! You can have maxium of 2 jokers. You earn one for every 4 games!"
+            }
+          </Typography>
+          <Button component={Link} to={`/matches`} sx={{mt: 1}}>
+            Go to Matches
+          </Button>
+        </Card>
       )}
 
       <Grid container spacing={3} sx={{ mb: 4 }}>

@@ -183,6 +183,23 @@ class Match {
     return result.rows[0];
   }
 
+  static async getLatestPendingMatchForUser(userId) {
+    const query = `
+      SELECT 
+        m.id, m.game_id, m.status,
+        g.name as game_name,
+        mp.joker_declared
+      FROM matches m
+      JOIN games g ON m.game_id = g.id
+      JOIN match_participants mp ON m.id = mp.match_id
+      WHERE mp.user_id = $1 AND m.status IN ('pending', 'in_progress')
+      ORDER BY m.timestamp DESC
+      LIMIT 1
+    `;
+    const result = await pool.query(query, [userId]);
+    return result.rows[0];
+  }
+
   static async delete(id) {
     const client = await pool.connect();
     try {
