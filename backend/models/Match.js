@@ -4,7 +4,7 @@ class Match {
   static async getAll() {
     const query = `
       SELECT 
-        m.id, m.game_id, m.admin_id, m.mini_admin_id, m.timestamp, m.pot, m.time_factor, m.status,
+        m.id, m.game_id, m.admin_id, m.mini_admin_id, m.timestamp, m.pot, m.time_factor, m.status, m.created_at,
         g.name as game_name, g.type as game_type,
         u.username as admin_username,
         mu.username as mini_admin_username,
@@ -15,7 +15,7 @@ class Match {
       LEFT JOIN users mu ON m.mini_admin_id = mu.id
       LEFT JOIN match_participants mp ON m.id = mp.match_id
       GROUP BY m.id, g.name, g.type, u.username, mu.username
-      ORDER BY m.timestamp DESC
+      ORDER BY m.created_at DESC
     `;
     const result = await pool.query(query);
     return result.rows;

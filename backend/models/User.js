@@ -99,9 +99,28 @@ class User {
   }
 
   static async delete(id) {
-    const query = 'DELETE FROM users WHERE id = $1 RETURNING id, username, display_name, role';
-    const result = await pool.query(query, [id]);
-    return result.rows[0];
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Delete related records in match_participants
+      await client.query('DELETE FROM match_participants WHERE user_id = $1', [id]);
+
+      // Delete related records in players
+      await client.query('DELETE FROM players WHERE user_id = $1', [id]);
+
+      // Finally, delete the user
+      const query = 'DELETE FROM users WHERE id = $1 RETURNING id, username, display_name, role';
+      const result = await client.query(query, [id]);
+
+      await client.query('COMMIT');
+      return result.rows[0];
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 }
 

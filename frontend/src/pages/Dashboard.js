@@ -164,6 +164,11 @@ function Dashboard() {
                 Jokers: {user.jokers}
               </Typography>
             )}
+            {user?.jokers !== undefined && (
+              <Typography variant="body2" sx={{ ml: 2, color: 'warning.dark' }}>
+                Jokers: {user.jokers}
+              </Typography>
+            )}
             {!latestMatch.joker_declared ? (
               <Button
                 variant="contained"
@@ -291,25 +296,32 @@ function Dashboard() {
                 Quick Actions
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {['admin', 'mini_admin'].includes(user?.role) && (
+                {user?.role === 'admin' && (
                   <>
-                    <Typography variant="body2" color="primary" sx={{ fontWeight: 600 }}>
+                    <Button component={Link} to="/matches" variant="text" sx={{ justifyContent: 'flex-start', pl: 0 }}>
                       • Create new match
-                    </Typography>
-                    <Typography variant="body2" color="primary" sx={{ fontWeight: 600 }}>
+                    </Button>
+                    <Button component={Link} to="/users" variant="text" sx={{ justifyContent: 'flex-start', pl: 0 }}>
                       • Manage players
-                    </Typography>
-                    <Typography variant="body2" color="primary" sx={{ fontWeight: 600 }}>
-                      • View detailed results
-                    </Typography>
+                    </Button>
                   </>
                 )}
-                <Typography variant="body2" color="text.secondary">
+                {user?.role === 'mini_admin' && (
+                  <>
+                    <Button component={Link} to="/matches" variant="text" sx={{ justifyContent: 'flex-start', pl: 0 }}>
+                      • Create new match
+                    </Button>
+                    <Button component={Link} to="/matches" variant="text" sx={{ justifyContent: 'flex-start', pl: 0 }}>
+                      • View detailed results
+                    </Button>
+                  </>
+                )}
+                <Button component={Link} to="/leaderboard" variant="text" sx={{ justifyContent: 'flex-start', pl: 0 }}>
                   • Check leaderboard
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
+                </Button>
+                <Button component={Link} to="/matches" variant="text" sx={{ justifyContent: 'flex-start', pl: 0 }}>
                   • View match history
-                </Typography>
+                </Button>
               </Box>
             </CardContent>
           </Card>

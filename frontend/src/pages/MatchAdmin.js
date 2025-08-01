@@ -604,6 +604,10 @@ function MatchAdmin() {
                     <> • Mini-Admin: {match.mini_admin_username}</>
                   )}
                 </Typography>
+                
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Created: {new Date(match.created_at).toLocaleDateString()} {new Date(match.created_at).toLocaleTimeString()}
+                </Typography>
 
                 <Box sx={{ display: 'flex', gap: 1, mt: 2, flexWrap: 'wrap' }}>
                   {/* Management buttons for admins and mini-admins */}
