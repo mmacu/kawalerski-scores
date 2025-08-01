@@ -138,8 +138,14 @@ function Dashboard() {
       </Typography>
       
       <Typography variant="h5" color="text.secondary" gutterBottom sx={{ mb: 4 }}>
-        Mini Olympics Dashboard
-      </Typography>
+            Mini Olympics Dashboard
+          </Typography>
+
+          {user?.jokers !== undefined && (
+            <Typography variant="h6" gutterBottom>
+              Jokers Available: {user.jokers}
+            </Typography>
+          )}
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -153,6 +159,11 @@ function Dashboard() {
             <Typography variant="h6" sx={{ color: 'warning.dark', fontWeight: 'bold' }}>
               🃏 Your Current Match: {latestMatch.game_name} ({latestMatch.status})
             </Typography>
+            {user?.jokers !== undefined && (
+              <Typography variant="body2" sx={{ ml: 2, color: 'warning.dark' }}>
+                Jokers: {user.jokers}
+              </Typography>
+            )}
             {!latestMatch.joker_declared ? (
               <Button
                 variant="contained"

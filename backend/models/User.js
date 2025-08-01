@@ -40,9 +40,12 @@ class User {
 
   static async getById(id) {
     const query = `
-      SELECT id, username, display_name, role, created_at
-      FROM users 
-      WHERE id = $1
+      SELECT 
+        u.id, u.username, u.display_name, u.role, u.created_at,
+        p.jokers, p.games_played_since_joker
+      FROM users u
+      LEFT JOIN players p ON u.id = p.user_id
+      WHERE u.id = $1
     `;
     const result = await pool.query(query, [id]);
     return result.rows[0];

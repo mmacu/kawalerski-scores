@@ -29,7 +29,8 @@ CREATE TABLE players (
     matches_played INTEGER NOT NULL DEFAULT 0,
     tickets_total INTEGER NOT NULL DEFAULT 0,
     efficiency DECIMAL(5,2) DEFAULT 0.0, -- calculated field
-    joker_used BOOLEAN NOT NULL DEFAULT FALSE,
+    jokers INTEGER NOT NULL DEFAULT 1,
+    games_played_since_joker INTEGER NOT NULL DEFAULT 0,
     momentum_flag BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

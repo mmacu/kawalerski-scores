@@ -29,8 +29,8 @@ class Player {
 
   static async create({ name, user_id }) {
     const query = `
-      INSERT INTO players (name, user_id) 
-      VALUES ($1, $2) 
+      INSERT INTO players (name, user_id, jokers) 
+      VALUES ($1, $2, 1) 
       RETURNING id, name, matches_played, tickets_total, efficiency, 
                 jokers, games_played_since_joker, momentum_flag, created_at, updated_at, user_id
     `;

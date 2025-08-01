@@ -709,6 +709,11 @@ function MatchAdmin() {
                       <Typography variant="h6" sx={{ color: 'warning.dark', fontWeight: 'bold' }}>
                         🃏 Joker Available
                       </Typography>
+                      {user?.jokers !== undefined && (
+                        <Typography variant="body2" sx={{ ml: 2, color: 'warning.dark' }}>
+                          Jokers: {user.jokers}
+                        </Typography>
+                      )}
                       {!jokerDeclarations.has(match.id) ? (
                         <Button
                           variant="contained"

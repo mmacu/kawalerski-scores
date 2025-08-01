@@ -86,7 +86,9 @@ router.get('/me', authenticateToken, async (req, res) => {
         id: user.id,
         username: user.username,
         display_name: user.display_name,
-        role: user.role
+        role: user.role,
+        jokers: user.jokers,
+        games_played_since_joker: user.games_played_since_joker
       }
     });
   } catch (error) {
